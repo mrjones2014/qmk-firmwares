@@ -42,14 +42,14 @@ static uint16_t boot_show_ts = 0;
 
 #define NUM_LAYERS ARRAY_SIZE(keymaps)
 
-static void cycle_layer(void) {
-  uint8_t current_layer = get_highest_layer(layer_state);
-  uint8_t next_layer = current_layer + 1;
-  if (next_layer >= NUM_LAYERS) {
-    next_layer = 0;
-  }
-  layer_move(next_layer);
-}
+// static void cycle_layer(void) {
+//   uint8_t current_layer = get_highest_layer(layer_state);
+//   uint8_t next_layer = current_layer + 1;
+//   if (next_layer >= NUM_LAYERS) {
+//     next_layer = 0;
+//   }
+//   layer_move(next_layer);
+// }
 
 void handle_send_unicode(const char *str) {
   os_variant_t detected_os = detected_host_os();
@@ -72,8 +72,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     } else {
       enc_btn_down = false;
       if (!boot_showing) {
-        // short press: cycle layers
-        cycle_layer();
+        // short press
+        tap_code(KC_AUDIO_MUTE);
       }
     }
     return false;
