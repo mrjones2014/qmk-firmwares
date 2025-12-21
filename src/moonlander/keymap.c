@@ -2,6 +2,7 @@
 #include "color.h"
 #include "keycodes.h"
 #include "keymap_us.h"
+#include "modifiers.h"
 #include "quantum_keycodes.h"
 #include QMK_KEYBOARD_H
 #include "os_detection.h"
@@ -17,6 +18,7 @@ enum custom_keycodes {
   FAT_ARROW = ZSA_SAFE_RANGE,
   THIN_ARROW,
   DEL_WORD,
+  OS_LAUNCHER,
 };
 
 // clang-format off
@@ -27,7 +29,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_UNDERSCORE,                                                                      KC_MINUS, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSLS,
         KC_LEFT_SHIFT, KC_A, KC_S, KC_D, KC_F, KC_G, KC_HYPR,                                                         KC_MEH, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOTE,
         KC_GRAVE, MT(MOD_LCTL, KC_Z), KC_X, KC_C, KC_V, KC_B,                                                                   KC_N, KC_M, KC_COMMA, KC_DOT, KC_SLASH, KC_EQUAL,
-        KC_LEFT_CTRL, KC_TRANSPARENT, KC_LEFT_ALT, KC_LEFT, KC_RIGHT,    KC_LEFT_ALT,                      LGUI(KC_SPACE),           KC_DOWN, KC_UP, KC_LBRC, KC_RBRC, TO(2),
+        KC_LEFT_CTRL, KC_TRANSPARENT, KC_LEFT_ALT, KC_LEFT, KC_RIGHT,    KC_LEFT_ALT,                      OS_LAUNCHER,           KC_DOWN, KC_UP, KC_LBRC, KC_RBRC, TO(2),
                                                          KC_SPACE, KC_BSPC, KC_LEFT_GUI,      LCTL(LSFT(KC_SPACE)), KC_LEFT_SHIFT, LT(1, KC_ENTER) // thumbs
     ),
     // symbols and stuff
@@ -129,9 +131,10 @@ static const gui_shortcut_t gui_shortcuts[] = {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   os_variant_t detected_os = detected_host_os();
   bool is_apple = (detected_os == OS_MACOS || detected_os == OS_IOS);
+  bool is_windows = (detected_os == OS_WINDOWS);
 
-  // Custom logic to unify keyboard shortcust across macOS and Linux on my
-  // Moonlander MK I
+  // Custom logic to unify keyboard shortcuts across macOS, Linux, and Windows
+  // on my Moonlander MK I
   if (record->event.pressed) {
     // "Delete Word" keycode handling
     if (keycode == DEL_WORD) {
@@ -139,7 +142,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       register_code(mod);
       tap_code(KC_BSPC);
       unregister_code(mod);
-      return true;
+      return false;
+    }
+
+    // OS-specific launcher: Cmd+Space on macOS, Win key on Windows, Super+Space
+    // on Linux
+    if (keycode == OS_LAUNCHER) {
+      // on Windows, only send the Windows key to open Start menu search
+      if (!is_windows) {
+        add_mods(MOD_MASK_GUI);
+      }
+      tap_code(KC_SPACE);
+      clear_mods();
+      return false;
     }
 
     uint16_t base_keycode = keycode;
@@ -149,8 +164,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     // Common Cmd/Ctrl key shortcuts handling
     uint8_t mods = get_mods();
-    // In QMK, the "GUI" key is the "Command" key on macOS and the "Super" key
-    // on Linux Only intercept when GUI modifier is held
+    // In QMK, the "GUI" key is the "Command" key on macOS, the "Super" key
+    // on Linux, and the "Windows" key on Windows
+    // Only intercept when GUI modifier is held
     if (mods & MOD_MASK_GUI) {
       for (uint8_t i = 0; i < GUI_SHORTCUT_COUNT; i++) {
         const gui_shortcut_t *entry = &gui_shortcuts[i];
@@ -172,7 +188,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         // Apply correct modifier for the OS, to be combined with any of the
         // other allowed modifiers.
-        add_mods(extra | (is_apple ? MOD_MASK_GUI : MOD_MASK_CTRL));
+        // macOS: use GUI (Cmd), Windows/Linux: use Ctrl
+        uint8_t os_mod = is_apple ? MOD_MASK_GUI : MOD_MASK_CTRL;
+        add_mods(extra | os_mod);
         tap_code(base_keycode);
 
         // Restore original modifier state (including the physically held GUI).
