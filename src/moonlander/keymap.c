@@ -152,9 +152,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         tap_code(KC_LGUI);
       } else {
         // macOS: Cmd+Space (Spotlight), Linux: Super+Space (app launcher)
-        register_code(KC_LGUI);
-        tap_code(KC_SPACE);
-        unregister_code(KC_LGUI);
+        tap_code16(LGUI(KC_SPACE));
       }
       return false;
     }
