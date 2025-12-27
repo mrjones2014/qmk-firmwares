@@ -148,11 +148,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // on Linux
     if (keycode == OS_LAUNCHER) {
       if (is_windows) {
-        // Just send Windows key (opens Start menu)
-        tap_code(KC_LGUI);
+        // Windows: just send GUI key (opens Start menu)
+        tap_code16(KC_LGUI);
       } else {
         // macOS: Cmd+Space (Spotlight), Linux: Super+Space (app launcher)
-        tap_code16(LGUI(KC_SPACE));
+        register_code(KC_LGUI);
+        register_code(KC_SPACE);
+        unregister_code(KC_SPACE);
+        unregister_code(KC_LGUI);
       }
       return false;
     }
@@ -184,12 +187,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
 
         uint8_t saved_mods = mods;
-        clear_mods();
 
         // Apply correct modifier for the OS, to be combined with any of the
         // other allowed modifiers.
         // macOS: use GUI (Cmd), Windows/Linux: use Ctrl
         uint8_t os_mod = is_apple ? MOD_MASK_GUI : MOD_MASK_CTRL;
+
+        // Keep non-OS-modifier keys held, but swap GUI for Ctrl on
+        // Windows/Linux
+        clear_mods();
         add_mods(extra | os_mod);
         tap_code(base_keycode);
 
