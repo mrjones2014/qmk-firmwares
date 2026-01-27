@@ -152,7 +152,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (is_windows) {
         tap_code(KC_LGUI);
       } else {
-        tap_code16(LGUI(KC_SPACE));
+        set_mods(MOD_MASK_GUI);
+        tap_code16(KC_SPACE);
+        clear_mods();
       }
 
       return false;
