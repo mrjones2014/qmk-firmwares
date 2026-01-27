@@ -1,3 +1,4 @@
+#include "action.h"
 #include "action_util.h"
 #include "color.h"
 #include "keycodes.h"
@@ -148,12 +149,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // OS-specific launcher: Cmd+Space on macOS, Win key on Windows, Super+Space
     // on Linux
     if (keycode == OS_LAUNCHER) {
-      // on Windows, only send the Windows key to open Start menu search
-      if (!is_windows) {
-        add_mods(MOD_MASK_GUI);
+      if (is_windows) {
+        tap_code(KC_LGUI);
+      } else {
+        tap_code16(LGUI(KC_SPACE));
       }
-      tap_code(KC_SPACE);
-      clear_mods();
+
       return false;
     }
 
@@ -195,7 +196,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         // Restore original modifier state (including the physically held GUI).
         clear_mods();
-        set_mods(saved_mods);
+        if (is_windows) {
+          // breaks key repeat, but fixes the issue
+          // where Super+* just toggles the start menu
+          set_mods(saved_mods & ~MOD_MASK_GUI);
+        } else {
+          set_mods(saved_mods);
+        }
         // we handled it, stop processing
         return false;
       }
