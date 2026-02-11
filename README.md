@@ -10,8 +10,7 @@ Custom, out-of-tree QMK firmwares, with `clangd` LSP setup.
 
 - **Cross-OS Shortcuts**: Same physical keys adapt to macOS (CMD) vs Linux (CTRL) automatically using QMK's OS detection.
 - **LSP setup**: Autocomplete and type checking for QMK firmware development.
-  - The `devShell` sets up a `.clangd` file in the proeject root (`.gitignored`)
-  - This sets up a bunch of path hacks required since the code is not nested inside the `qmk_firmware` tree, so it references `/nix/store/*` paths
+  - The `devShell` sets up `compile_commands.json` files for each keyboard (`.gitignore`d)
 - **Nix-managed**: Reproducible builds, all dependencies handled auatomatically
   - This works by essentially patching your configuration into the `qmk_firmware` tree at build time
   - See [build.nix](https://github.com/mrjones2014/moonlander-qmk-firmware/blob/master/nix/build.nix)
