@@ -27,6 +27,7 @@
         };
         build = pkgs.callPackage ./nix/build.nix { };
         flash = pkgs.callPackage ./nix/flash.nix { };
+        compiledb = pkgs.callPackage ./nix/compiledb.nix { };
         keyboards = {
           moonlander = {
             inherit qmk-firmware;
@@ -39,20 +40,20 @@
             src = ./src/togkey_pad_plus;
           };
         };
-        clangd-config = import ./nix/clangd-config.nix {
-          inherit pkgs;
-          inherit qmk-firmware;
-        };
+        moonlander-compiledb = compiledb keyboards.moonlander;
+        togkey-compiledb = compiledb keyboards.togkey_pad_plus;
       in
       {
         packages = {
           moonlander = {
             build = build keyboards.moonlander;
             flash = flash keyboards.moonlander;
+            compiledb = moonlander-compiledb;
           };
           togkey = {
             build = build keyboards.togkey_pad_plus;
             flash = flash keyboards.togkey_pad_plus;
+            compiledb = togkey-compiledb;
           };
         };
         devShells.default = pkgs.mkShell {
@@ -61,7 +62,8 @@
             pkgs.qmk
           ];
           shellHook = ''
-            ln -sf "${clangd-config}/.clangd" .clangd
+            ln -sf "${moonlander-compiledb}/compile_commands.json" src/moonlander/compile_commands.json
+            ln -sf "${togkey-compiledb}/compile_commands.json" src/togkey_pad_plus/compile_commands.json
           '';
         };
       }
