@@ -3,20 +3,27 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    qmk-firmware = {
+    qmk_firmware = {
+      url = "https://github.com/qmk/qmk_firmware";
+      ref = "0.31.11";
       flake = false;
-      url = "https://github.com/qmk/qmk_firmware.git";
-      ref = "0.30.6";
       type = "git";
       submodules = true;
+    };
+    nixcaps = {
+      url = "github:agustinmista/nixcaps";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+        qmk_firmware.follows = "qmk_firmware";
+      };
     };
   };
 
   outputs =
-    {
+    inputs@{
       nixpkgs,
       flake-utils,
-      qmk-firmware,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -25,46 +32,31 @@
         pkgs = import nixpkgs {
           inherit system;
         };
-        build = pkgs.callPackage ./nix/build.nix { };
-        flash = pkgs.callPackage ./nix/flash.nix { };
-        compiledb = pkgs.callPackage ./nix/compiledb.nix { };
+        nixcaps = inputs.nixcaps.lib.${system};
         keyboards = {
           moonlander = {
-            inherit qmk-firmware;
             keyboard = "zsa/moonlander";
             src = ./src/moonlander;
           };
-          togkey_pad_plus = {
-            inherit qmk-firmware;
+          togkey = {
             keyboard = "togkey/pad_plus";
-            src = ./src/togkey_pad_plus;
+            src = ./src/togkey;
           };
         };
-        moonlander-compiledb = compiledb keyboards.moonlander;
-        togkey-compiledb = compiledb keyboards.togkey_pad_plus;
       in
       {
-        packages = {
-          moonlander = {
-            build = build keyboards.moonlander;
-            flash = flash keyboards.moonlander;
-            compiledb = moonlander-compiledb;
-          };
-          togkey = {
-            build = build keyboards.togkey_pad_plus;
-            flash = flash keyboards.togkey_pad_plus;
-            compiledb = togkey-compiledb;
-          };
-        };
+        packages = pkgs.lib.mapAttrs (_: config: nixcaps.mkQmkFirmware config) keyboards;
+        apps = pkgs.lib.mapAttrs (_: config: nixcaps.flashQmkFirmware config) keyboards;
         devShells.default = pkgs.mkShell {
-          QMK_HOME = "${qmk-firmware}";
+          QMK_HOME = "${inputs.nixcaps.inputs.qmk_firmware}";
           packages = [
             pkgs.qmk
           ];
-          shellHook = ''
-            ln -sf "${moonlander-compiledb}/compile_commands.json" src/moonlander/compile_commands.json
-            ln -sf "${togkey-compiledb}/compile_commands.json" src/togkey_pad_plus/compile_commands.json
-          '';
+          shellHook = pkgs.lib.concatStringsSep "\n" (
+            pkgs.lib.mapAttrsToList (name: config: ''
+              ln -sf "${nixcaps.mkCompileDb config}/compile_commands.json" src/${name}/compile_commands.json
+            '') keyboards
+          );
         };
       }
     );

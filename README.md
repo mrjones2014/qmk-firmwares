@@ -1,6 +1,6 @@
 # Custom QMK Firmwares
 
-Custom, out-of-tree QMK firmwares, with `clangd` LSP setup.
+Custom QMK firmwares, with out-of-tree compilation made possible by [Nixcaps](https://github.com/agustinmista/nixcaps).
 
 - ZSA Moonlander MK I
   - Cross-OS shortcuts (ctrl vs. cmd shortcuts on Linux vs. macOS)
@@ -12,9 +12,7 @@ Custom, out-of-tree QMK firmwares, with `clangd` LSP setup.
 - **LSP setup**: Autocomplete and type checking for QMK firmware development.
   - The `devShell` sets up `compile_commands.json` files for each keyboard (`.gitignore`d)
 - **Nix-managed**: Reproducible builds, all dependencies handled auatomatically
-  - This works by essentially patching your configuration into the `qmk_firmware` tree at build time
-  - See [build.nix](https://github.com/mrjones2014/moonlander-qmk-firmware/blob/master/nix/build.nix)
-  - This is _loosely_ based on [Nixcaps](https://github.com/agustinmista/nixcaps)
+  - Out-of-tree compilation and flashing made possible by [Nixcaps](https://github.com/agustinmista/nixcaps)
 
 ## Quick Start
 
@@ -23,8 +21,9 @@ You can use `direnv` to manage the Nix `devShell`. I highly recommend using [nix
 ```bash
 direnv allow
 # from now on, the devShell will activate whenever you `cd` into the project
-# the repo root should have an auto-generated .clangd config file
-nvim src/keymap.c
+# the repo root should have an auto-generated `compile_commands.json` file
+# that clangd will use for LSP configuration
+nvim src/moonlander/keymap.c
 ```
 
 ## Build
@@ -32,14 +31,16 @@ nvim src/keymap.c
 Building the firmware is a Nix derivation:
 
 ```bash
-nix build .#moonlander.build
-nix build .#togkey.build
+nix build .#moonlander
+nix build .#togkey
 # outputs to ./result/bin/*
 ```
 
-You can also build + flash the firmware in one step by running:
+You can also flash the firmware by running:
 
 ```bash
-nix run .#moonlander.flash
-nix run .#togkey.flash
+nix run .#moonlander
+nix run .#togkey
 ```
+
+This will automatically rebuild the firmware if needed, using the power of Nix to detect when rebuild is needed.

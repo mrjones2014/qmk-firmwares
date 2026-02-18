@@ -18,6 +18,32 @@
         "type": "github"
       }
     },
+    "nixcaps": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "qmk_firmware": [
+          "qmk_firmware"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771445251,
+        "narHash": "sha256-D/36ScxN9sp4YEn1H9zwAMP+ienUaweXZadWvG5FsgE=",
+        "owner": "agustinmista",
+        "repo": "nixcaps",
+        "rev": "b87cd973f11a06718f4785e89929e53b1cec5e71",
+        "type": "github"
+      },
+      "original": {
+        "owner": "agustinmista",
+        "repo": "nixcaps",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1760524057,
@@ -34,30 +60,31 @@
         "type": "github"
       }
     },
-    "qmk-firmware": {
+    "qmk_firmware": {
       "flake": false,
       "locked": {
-        "lastModified": 1761040654,
-        "narHash": "sha256-SsRHL4je3V1kg4dalnV3/+EwXt45vKkiiqr/yA6NBlc=",
-        "ref": "0.30.6",
-        "rev": "d0db38cbdc9410dd58e6c83d18bca2232b823d24",
-        "revCount": 29016,
+        "lastModified": 1771006911,
+        "narHash": "sha256-S+XhWcWT6xNAGaJOCGnkBpVHnVYXa/b/gyZWHIJOn1s=",
+        "ref": "0.31.11",
+        "rev": "63a3fc3591f755d1ef6b36269e61df16f4c32707",
+        "revCount": 29268,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/qmk/qmk_firmware.git"
+        "url": "https://github.com/qmk/qmk_firmware"
       },
       "original": {
-        "ref": "0.30.6",
+        "ref": "0.31.11",
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/qmk/qmk_firmware.git"
+        "url": "https://github.com/qmk/qmk_firmware"
       }
     },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "nixcaps": "nixcaps",
         "nixpkgs": "nixpkgs",
-        "qmk-firmware": "qmk-firmware"
+        "qmk_firmware": "qmk_firmware"
       }
     },
     "systems": {

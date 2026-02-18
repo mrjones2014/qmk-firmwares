@@ -18,5 +18,5 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Build firmware with Nix
         run: |
-          nix build .#moonlander.build
-          nix build .#togkey.build
+          nix build .#moonlander
+          nix build .#togkey
