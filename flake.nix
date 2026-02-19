@@ -3,6 +3,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     qmk_firmware = {
       url = "https://github.com/qmk/qmk_firmware";
       ref = "0.31.11";
@@ -22,16 +26,17 @@
 
   outputs =
     inputs@{
+      self,
       nixpkgs,
       flake-utils,
+      treefmt-nix,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
+        pkgs = import nixpkgs { inherit system; };
+        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         nixcaps = inputs.nixcaps.lib.${system};
         keyboards = {
           moonlander = {
@@ -45,6 +50,8 @@
         };
       in
       {
+        formatter = treefmtEval.config.build.wrapper;
+        checks.formatting = treefmtEval.config.build.check self;
         packages = pkgs.lib.mapAttrs (_: config: nixcaps.mkQmkFirmware config) keyboards;
         apps = pkgs.lib.mapAttrs (_: config: nixcaps.flashQmkFirmware config) keyboards;
         devShells.default = pkgs.mkShell {
