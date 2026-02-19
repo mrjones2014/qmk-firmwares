@@ -31,17 +31,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1771451461,
-        "narHash": "sha256-Z7rGkHzDk9eka+QYbcDYZx1BIWlMSn+UXc2YNyAqCO4=",
-        "owner": "mrjones2014",
+        "lastModified": 1771529827,
+        "narHash": "sha256-CX3+KcXqCY5S+CdNKUnl7HTw5y13n6GZKgA8dzEhSek=",
+        "owner": "agustinmista",
         "repo": "nixcaps",
-        "rev": "b4b5e422cff7920f545101261144359bd73f5d71",
+        "rev": "d20a36b1e48f299b169388f96f80bf94361d06c8",
         "type": "github"
       },
       "original": {
-        "owner": "mrjones2014",
+        "owner": "agustinmista",
         "repo": "nixcaps",
-        "rev": "b4b5e422cff7920f545101261144359bd73f5d71",
         "type": "github"
       }
     },

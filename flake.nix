@@ -11,7 +11,7 @@
       submodules = true;
     };
     nixcaps = {
-      url = "github:mrjones2014/nixcaps?rev=b4b5e422cff7920f545101261144359bd73f5d71";
+      url = "github:agustinmista/nixcaps";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
