@@ -1,5 +1,5 @@
 {
-  description = "Moonlander MK II QMK Firmware";
+  description = "Custom QMK firmwares built with nixcaps";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -11,7 +11,7 @@
       submodules = true;
     };
     nixcaps = {
-      url = "github:agustinmista/nixcaps";
+      url = "github:mrjones2014/nixcaps?rev=b4b5e422cff7920f545101261144359bd73f5d71";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
