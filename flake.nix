@@ -48,21 +48,28 @@
             src = ./src/togkey;
           };
         };
+        prefixKeys = prefix: pkgs.lib.mapAttrs' (n: v: pkgs.lib.nameValuePair "${prefix}${n}" v);
+        eachKeyboard = op: pkgs.lib.mapAttrs (_: op) keyboards;
+        firmwares = eachKeyboard nixcaps.mkQmkFirmware;
+        compileDbs = eachKeyboard nixcaps.mkCompileDb;
       in
       {
         formatter = treefmtEval.config.build.wrapper;
-        checks.formatting = treefmtEval.config.build.check self;
-        packages = pkgs.lib.mapAttrs (_: config: nixcaps.mkQmkFirmware config) keyboards;
-        apps = pkgs.lib.mapAttrs (_: config: nixcaps.flashQmkFirmware config) keyboards;
+        packages = firmwares;
+        apps = eachKeyboard nixcaps.flashQmkFirmware;
+        checks =
+          firmwares
+          // (prefixKeys "compiledb-" compileDbs)
+          // {
+            formatting = treefmtEval.config.build.check self;
+          };
         devShells.default = pkgs.mkShell {
           QMK_HOME = "${inputs.nixcaps.inputs.qmk_firmware}";
-          packages = [
-            pkgs.qmk
-          ];
+          packages = [ pkgs.qmk ];
           shellHook = pkgs.lib.concatStringsSep "\n" (
-            pkgs.lib.mapAttrsToList (name: config: ''
-              ln -sf "${nixcaps.mkCompileDb config}/compile_commands.json" src/${name}/compile_commands.json
-            '') keyboards
+            pkgs.lib.mapAttrsToList (name: db: ''
+              ln -sf "${db}/compile_commands.json" src/${name}/compile_commands.json
+            '') compileDbs
           );
         };
       }
