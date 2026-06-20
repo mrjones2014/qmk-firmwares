@@ -79,12 +79,32 @@
         "url": "https://github.com/qmk/qmk_firmware"
       }
     },
+    "qmk_firmware_keychron": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776664986,
+        "narHash": "sha256-dDqEPGPUIKpmVyp2mj79S5fmdtdfN27HIp8Iqr86L8Q=",
+        "ref": "2025q3",
+        "rev": "eb4afcbe993c98687a46415391a154b7be528d80",
+        "revCount": 29143,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Keychron/qmk_firmware"
+      },
+      "original": {
+        "ref": "2025q3",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Keychron/qmk_firmware"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixcaps": "nixcaps",
         "nixpkgs": "nixpkgs",
         "qmk_firmware": "qmk_firmware",
+        "qmk_firmware_keychron": "qmk_firmware_keychron",
         "treefmt-nix": "treefmt-nix"
       }
     },

@@ -5,6 +5,7 @@ Custom QMK firmwares, with out-of-tree compilation made possible by [Nixcaps](ht
 - ZSA Moonlander MK I
   - Cross-OS shortcuts (ctrl vs. cmd shortcuts on Linux vs. macOS)
 - TogKey Pad Plus
+- Keychron V1 8K
 
 ## Features
 
@@ -33,6 +34,7 @@ Building the firmware is a Nix derivation:
 ```bash
 nix build .#moonlander
 nix build .#togkey
+nix build .#v1_8k
 # outputs to ./result/bin/*
 ```
 
@@ -41,6 +43,7 @@ You can also flash the firmware by running:
 ```bash
 nix run .#moonlander
 nix run .#togkey
+nix run .#v1_8k
 ```
 
 This will automatically rebuild the firmware if needed, using the power of Nix to detect when rebuild is needed.
