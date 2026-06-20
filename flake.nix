@@ -47,9 +47,15 @@
         nixcaps = inputs.nixcaps.lib.${system};
         nixcapsKeychron =
           let
-            mkQmkFirmware = pkgs.callPackage (import "${inputs.nixcaps}/nix/build.nix" inputs.qmk_firmware_keychron) { };
-            mkFlashQmkFirmware = pkgs.callPackage (import "${inputs.nixcaps}/nix/flash.nix" inputs.qmk_firmware_keychron) { };
-            mkCompileDb = pkgs.callPackage (import "${inputs.nixcaps}/nix/compiledb.nix" inputs.qmk_firmware_keychron) { };
+            mkQmkFirmware =
+              pkgs.callPackage (import "${inputs.nixcaps}/nix/build.nix" inputs.qmk_firmware_keychron)
+                { };
+            mkFlashQmkFirmware =
+              pkgs.callPackage (import "${inputs.nixcaps}/nix/flash.nix" inputs.qmk_firmware_keychron)
+                { };
+            mkCompileDb =
+              pkgs.callPackage (import "${inputs.nixcaps}/nix/compiledb.nix" inputs.qmk_firmware_keychron)
+                { };
             flashQmkFirmware =
               args:
               let
@@ -90,7 +96,8 @@
       {
         formatter = treefmtEval.config.build.wrapper;
         packages = firmwares // keychronFirmwares;
-        apps = (eachKeyboard nixcaps.flashQmkFirmware) // (eachKeychronKeyboard nixcapsKeychron.flashQmkFirmware);
+        apps =
+          (eachKeyboard nixcaps.flashQmkFirmware) // (eachKeychronKeyboard nixcapsKeychron.flashQmkFirmware);
         checks =
           firmwares
           // keychronFirmwares
